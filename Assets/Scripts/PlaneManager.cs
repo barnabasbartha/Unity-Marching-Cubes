@@ -122,7 +122,7 @@ public class PlaneManager : MonoBehaviour {
       var marching = new MarchingCubes();
       var time = Time.realtimeSinceStartup;
       marching.Generate(voxels, size, vertices, triangles);
-      Debug.Log((Time.realtimeSinceStartup - time) * 1000 + "ms");
+      Debug.Log((Time.realtimeSinceStartup - time) * 1000 + "ms, vertices: " + vertices.Count);
       mesh.SetVertices(vertices);
       mesh.SetTriangles(triangles.ToArray(), 0);
       mesh.RecalculateNormals();

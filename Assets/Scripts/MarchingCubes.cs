@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -77,14 +78,17 @@ public class MarchingCubes {
       }
 
       //Save the triangles that were found. There can be up to five per cube
+      var vertexIndices = new Dictionary<int, int>();
       for (int i = 0; i < 5; i++) {
          if (TriangleConnectionTable[flagIndex * 16 + 3 * i] < 0) break;
-         var idx = vertices.Count;
          for (int j = 0; j < 3; j++) {
             var vert = TriangleConnectionTable[flagIndex * 16 + 3 * i + j];
-            // TODO: Cache vertex
-            triangles.Add(idx + j);
-            vertices.Add(EdgeVertex[vert]);
+            int hash = EdgeVertex[vert].GetHashCode();
+            if (!vertexIndices.ContainsKey(hash)) {
+               vertexIndices.Add(hash, vertices.Count);
+               vertices.Add(EdgeVertex[vert]);
+            }
+            triangles.Add(vertexIndices[hash]);
          }
       }
    }
