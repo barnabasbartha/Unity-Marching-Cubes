@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\D\Unity\UnityDotsTest" t="IncludeRecursive">
+      <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
+      <e p="Assets" t="Include">
+        <e p="Scripts" t="Include">
+          <e p="MarchingCubes.cs" t="Include" />
+          <e p="PlaneManager.cs" t="Include" />
+          <e p="VertexComponent.cs" t="Include" />
+          <e p="VertexJob.cs" t="Include" />
+          <e p="VertexSystem.cs" t="Include" />
+        </e>
+      </e>
+      <e p="obj" t="ExcludeRecursive" />
+      <e p="Packages" t="ExcludeRecursive" />
+      <e p="Temp\bin" t="ExcludeRecursive" />
+      <e p="UnityDotsTest.sln" t="IncludeFlat" />
+    </e>
+    <e p="C:\Users\Barnus\AppData\Local\JetBrains\Rider2020.3\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\Barnus\AppData\Local\JetBrains\Rider2020.3\resharper-host\Local\Transient\Rider\v203\SolutionCaches\_UnityDotsTest.1995602716.00" t="ExcludeRecursive" />
+  </component>
+</project>
