@@ -5,6 +5,7 @@ using UnityEngine;
 
 [BurstCompile]
 public struct VertexJob : IJobParallelFor {
+   // An empty n^3 vertices array is required
    public NativeArray<Vector3> vertices;
 
    [ReadOnly] public float rand;

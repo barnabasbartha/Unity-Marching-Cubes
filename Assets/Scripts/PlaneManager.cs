@@ -8,7 +8,7 @@ public class PlaneManager : MonoBehaviour {
    public Material material;
 
    private int prevSize;
-   [Range(3, 1000)] public int size;
+   [Range(3, 75)] public int size;
 
    private Mesh mesh;
    // private NativeArray<Vector3> vertices;
@@ -121,7 +121,7 @@ public class PlaneManager : MonoBehaviour {
 
       var marching = new MarchingCubes();
       var time = Time.realtimeSinceStartup;
-      marching.Generate(voxels, size, size, size, vertices, triangles);
+      marching.Generate(voxels, size, vertices, triangles);
       Debug.Log((Time.realtimeSinceStartup - time) * 1000 + "ms");
       mesh.SetVertices(vertices);
       mesh.SetTriangles(triangles.ToArray(), 0);

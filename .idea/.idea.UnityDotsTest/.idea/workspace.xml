@@ -27,10 +27,10 @@
       <option value="$PROJECT_DIR$/Assets/Scripts/RenderMeshSystem.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/VertexSystem.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/VertexComponent.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/VertexJob.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/Marching/MarchingCubes.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/MarchingCubes.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/VertexJob.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/PlaneManager.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/MarchingCubes.cs" />
     </changedPaths>
   </component>
   <component name="ProjectId" id="1mf1C6LplN8Qm1mOagmueZaH49q" />
@@ -72,7 +72,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1609869712930</updated>
-      <workItem from="1609869741323" duration="16938000" />
+      <workItem from="1609869741323" duration="21047000" />
     </task>
     <servers />
   </component>
