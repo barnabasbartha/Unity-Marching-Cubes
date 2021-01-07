@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class MarchingCubes {
    private const float SURFACE = .5f;
-   private readonly float[] Cube;
-   private readonly Vector3[] EdgeVertex;
+   private readonly float[] cube;
+   private readonly Vector3[] edgeVertex;
 
    public MarchingCubes() {
-      Cube = new float[8];
-      EdgeVertex = new Vector3[12];
+      cube = new float[8];
+      edgeVertex = new Vector3[12];
    }
 
    public void Generate(IList<float> levels, int size, IList<Vector3> vertices, IList<int> triangles) {
@@ -54,8 +53,8 @@ public class MarchingCubes {
          int ix = x + VertexOffset[i * 3];
          int iy = y + VertexOffset[i * 3 + 1];
          int iz = z + VertexOffset[i * 3 + 2];
-         Cube[i] = levels[ix + iy * size + iz * size * size];
-         if (Cube[i] <= SURFACE)
+         cube[i] = levels[ix + iy * size + iz * size * size];
+         if (cube[i] <= SURFACE)
             flagIndex |= 1 << i;
       }
 
@@ -70,23 +69,22 @@ public class MarchingCubes {
          //if there is an intersection on this edge
          if ((edgeFlags & (1 << i)) == 0) continue;
 
-         float offset = GetOffset(Cube[EdgeConnection[i * 2]], Cube[EdgeConnection[i * 2 + 1]]);
+         float offset = GetOffset(cube[EdgeConnection[i * 2]], cube[EdgeConnection[i * 2 + 1]]);
 
-         EdgeVertex[i].x = x + (VertexOffset[EdgeConnection[i * 2] * 3] + offset * EdgeDirection[i * 3]);
-         EdgeVertex[i].y = y + (VertexOffset[EdgeConnection[i * 2] * 3 + 1] + offset * EdgeDirection[i * 3 + 1]);
-         EdgeVertex[i].z = z + (VertexOffset[EdgeConnection[i * 2] * 3 + 2] + offset * EdgeDirection[i * 3 + 2]);
+         edgeVertex[i].x = x + (VertexOffset[EdgeConnection[i * 2] * 3] + offset * EdgeDirection[i * 3]);
+         edgeVertex[i].y = y + (VertexOffset[EdgeConnection[i * 2] * 3 + 1] + offset * EdgeDirection[i * 3 + 1]);
+         edgeVertex[i].z = z + (VertexOffset[EdgeConnection[i * 2] * 3 + 2] + offset * EdgeDirection[i * 3 + 2]);
       }
 
-      //Save the triangles that were found. There can be up to five per cube
       var vertexIndices = new Dictionary<int, int>();
       for (int i = 0; i < 5; i++) {
          if (TriangleConnectionTable[flagIndex * 16 + 3 * i] < 0) break;
          for (int j = 0; j < 3; j++) {
             var vert = TriangleConnectionTable[flagIndex * 16 + 3 * i + j];
-            int hash = EdgeVertex[vert].GetHashCode();
+            int hash = edgeVertex[vert].GetHashCode();
             if (!vertexIndices.ContainsKey(hash)) {
                vertexIndices.Add(hash, vertices.Count);
-               vertices.Add(EdgeVertex[vert]);
+               vertices.Add(edgeVertex[vert]);
             }
             triangles.Add(vertexIndices[hash]);
          }

@@ -329,7 +329,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: 0ce1e53c190365b49a5b78c141fd83de, type: 2}
-  size: 20
+  size: 28
 --- !u!4 &1105181375
 Transform:
   m_ObjectHideFlags: 0
