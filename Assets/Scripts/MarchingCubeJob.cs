@@ -5,23 +5,32 @@ using Unity.Jobs;
 using UnityEngine;
 
 [BurstCompile]
-public struct MarchingCubeJob : IJob {
+public struct MarchingCubeJob : IJobParallelFor {
    private const float SURFACE = .5f;
 
-   [WriteOnly] public NativeList<Vector3> vertices;
-   [WriteOnly] public NativeList<int> triangles;
    [ReadOnly] public int size;
-   [ReadOnly] public NativeArray<float> levels;
+   public NativeList<Vector3> planeVertices;
+   public NativeHashMap<int, NativeList<int>> planeVerticesIndices;
+   public NativeHashMap<int, NativeList<int>> planeTriangles;
+   [ReadOnly] public NativeHashMap<int, NativeArray<float>> planeLevels; // TODO: Convert to 1d array
+   public NativeHashMap<int, NativeArray<float>> planeCube; // TODO: Convert to 1d array
+   public NativeHashMap<int, NativeArray<Vector3>> planeEdgeVertex; // TODO: Convert to 1d array
+   public NativeHashMap<int, NativeHashMap<int, int>> planeVertexIndices;
    [ReadOnly] public NativeArray<int> VertexOffset;
    [ReadOnly] public NativeArray<int> EdgeConnection;
    [ReadOnly] public NativeArray<float> EdgeDirection;
    [ReadOnly] public NativeArray<int> CubeEdgeFlags;
    [ReadOnly] public NativeArray<int> TriangleConnectionTable;
-   public NativeArray<float> cube;
-   public NativeArray<Vector3> edgeVertex;
-   public NativeHashMap<int, int> vertexIndices;
 
-   public void Execute() {
+   public void Execute(int planeIndex) {
+      var vertices = planeVertices;
+      var verticesIndices = planeVerticesIndices[planeIndex];
+      var triangles = planeTriangles[planeIndex];
+      var levels = planeLevels[planeIndex];
+      var cube = planeCube[planeIndex];
+      var edgeVertex = planeEdgeVertex[planeIndex];
+      var vertexIndices = planeVertexIndices[planeIndex];
+
       int size1 = size - 1;
       int size2 = size1 * size1;
       int size3 = size2 * size1;
@@ -70,6 +79,7 @@ public struct MarchingCubeJob : IJob {
                var vert = TriangleConnectionTable[triIndex + j];
                int hash = edgeVertex[vert].GetHashCode();
                if (!vertexIndices.ContainsKey(hash)) {
+                  verticesIndices.Add(vertices.Length);
                   vertexIndices.Add(hash, nrOfVertices);
                   vertices.Add(edgeVertex[vert]);
                   nrOfVertices++;
