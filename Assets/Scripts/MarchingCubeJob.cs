@@ -5,10 +5,11 @@ using Unity.Jobs;
 using UnityEngine;
 
 [BurstCompile]
-public struct VertexJob : IJob {
+public struct MarchingCubeJob : IJob {
+   private const float SURFACE = .5f;
+
    [WriteOnly] public NativeList<Vector3> vertices;
    [WriteOnly] public NativeList<int> triangles;
-
    [ReadOnly] public int size;
    [ReadOnly] public NativeArray<float> levels;
    [ReadOnly] public NativeArray<int> VertexOffset;
@@ -16,9 +17,6 @@ public struct VertexJob : IJob {
    [ReadOnly] public NativeArray<float> EdgeDirection;
    [ReadOnly] public NativeArray<int> CubeEdgeFlags;
    [ReadOnly] public NativeArray<int> TriangleConnectionTable;
-
-
-   private const float SURFACE = .5f;
    public NativeArray<float> cube;
    public NativeArray<Vector3> edgeVertex;
    public NativeHashMap<int, int> vertexIndices;
@@ -35,7 +33,7 @@ public struct VertexJob : IJob {
          int z = (int) Math.Floor(index / (float) size2);
          int flagIndex = 0;
 
-         //Find which vertices are inside of the surface and which are outside
+         // Find which vertices are inside of the surface and which are outside
          for (int i = 0; i < 8; i++) {
             int ix = x + VertexOffset[i * 3];
             int iy = y + VertexOffset[i * 3 + 1];
@@ -45,13 +43,13 @@ public struct VertexJob : IJob {
                flagIndex |= 1 << i;
          }
 
-         //Find which edges are intersected by the surface
+         // Find which edges are intersected by the surface
          int edgeFlags = CubeEdgeFlags[flagIndex];
 
-         //If the cube is entirely inside or outside of the surface, then there will be no intersections
+         // If the cube is entirely inside or outside of the surface, then there will be no intersections
          if (edgeFlags == 0) continue;
 
-         //Find the point of intersection of the surface with each edge
+         // Find the point of intersection of the surface with each edge
          for (int i = 0; i < 12; i++) {
             //if there is an intersection on this edge
             if ((edgeFlags & (1 << i)) == 0) continue;
@@ -65,7 +63,6 @@ public struct VertexJob : IJob {
             };
          }
 
-         //Save the triangles that were found. There can be up to five per cube
          for (int i = 0; i < 5; i++) {
             int triIndex = flagIndex * 16 + 3 * i;
             if (TriangleConnectionTable[triIndex] < 0) break;
@@ -77,6 +74,7 @@ public struct VertexJob : IJob {
                   vertices.Add(edgeVertex[vert]);
                   nrOfVertices++;
                }
+
                triangles.Add(vertexIndices[hash]);
             }
          }
