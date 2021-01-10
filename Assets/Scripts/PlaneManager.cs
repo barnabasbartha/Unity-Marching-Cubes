@@ -3,6 +3,8 @@ using Unity.Jobs;
 using UnityEngine;
 
 public class PlaneManager : MonoBehaviour {
+   public Material material;
+
    private int prevSize;
    [Range(3, 75)] public int size = 20;
 
@@ -22,7 +24,11 @@ public class PlaneManager : MonoBehaviour {
 
    private void Start() {
       mesh = new Mesh();
-      GetComponent<MeshFilter>().mesh = mesh;
+      var obj = new GameObject();
+      obj.AddComponent<MeshFilter>();
+      obj.GetComponent<MeshFilter>().mesh = mesh;
+      obj.AddComponent<MeshRenderer>();
+      obj.GetComponent<MeshRenderer>().material = material;
 
       vertices = new NativeList<Vector3>(Allocator.Persistent);
       triangles = new NativeList<int>(Allocator.Persistent);
