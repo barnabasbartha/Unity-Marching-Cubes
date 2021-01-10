@@ -17,31 +17,64 @@ public class PlaneManager : MonoBehaviour {
    private NativeList<int> triangles;
    private NativeArray<float> cube;
    private NativeArray<Vector3> edgeVertex;
-   private NativeHashMap<int, int> vertexIndices;
+
    private NativeArray<int> vertexOffset;
    private NativeArray<int> edgeConnection;
    private NativeArray<float> edgeDirection;
    private NativeArray<int> cubeEdgeFlags;
    private NativeArray<int> triangleConnectionTable;
 
+   private NativeArray<float> levels;
+
    private void Start() {
       mesh = new Mesh();
+      mesh.MarkDynamic();
       //mesh.RecalculateNormals();
       //mesh.RecalculateBounds();
+
+
+      levels = new NativeArray<float>(size * size * size, Allocator.TempJob);
+      float size1 = size - 1.0f;
+
+      for (int x = 0; x < size; x++) {
+         for (int y = 0; y < size; y++) {
+            for (int z = 0; z < size; z++) {
+               float fx = x / size1;
+               float fy = y / size1;
+               float fz = z / size1;
+
+               int idx = x + y * size + z * size * size;
+
+               levels[idx] = PerlinNoise3D(fx, fy, fz);
+            }
+         }
+      }
+
 
       EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
       EntityArchetype archetype = entityManager.CreateArchetype(
          typeof(Translation),
          typeof(RenderMesh),
          typeof(LocalToWorld),
-         typeof(RenderBounds)
-         // typeof(VertexComponent)
+         typeof(RenderBounds),
+         typeof(VertexComponent)
       );
       Entity entity = entityManager.CreateEntity(archetype);
-      //entityManager.SetComponentData(entity, new VertexComponent {
-      //   vertices = new Vector3[new Vector3()],
-      //   triangles = new NativeArray<int>()
-      //});
+      entityManager.SetComponentData(entity, new VertexComponent {
+         levels = levels,
+         vertices = vertices,
+         triangles = triangles,
+         size = 10,
+         cube = cube,
+         edgeVertex = edgeVertex,
+         vertexOffset = vertexOffset,
+         edgeConnection = edgeConnection,
+         edgeDirection = edgeDirection,
+         cubeEdgeFlags = cubeEdgeFlags,
+         triangleConnectionTable = triangleConnectionTable,
+
+         needsUpdate = true
+      });
       entityManager.SetSharedComponentData(entity, new RenderMesh {
          mesh = mesh,
          material = material
@@ -52,6 +85,7 @@ public class PlaneManager : MonoBehaviour {
       triangles = new NativeList<int>(Allocator.Persistent);
       cube = new NativeArray<float>(8, Allocator.Persistent);
       edgeVertex = new NativeArray<Vector3>(12, Allocator.Persistent);
+
       vertexOffset = new NativeArray<int>(VertexOffset, Allocator.Persistent);
       edgeConnection = new NativeArray<int>(EdgeConnection, Allocator.Persistent);
       edgeDirection = new NativeArray<float>(EdgeDirection, Allocator.Persistent);
@@ -103,85 +137,82 @@ public class PlaneManager : MonoBehaviour {
       return Mathf.Sin(Mathf.PI * Mathf.PerlinNoise(a, b));
    }
 
+   /*
+     private void Update() {
+        //if (size == prevSize) return;
+        //prevSize = size;
+        //GenerateMesh();
 
-   private void Update() {
-      if (size == prevSize) return;
-      prevSize = size;
-      GenerateMesh();
-
-      /*
-      var job = new VertexJob {
-         vertices = vertices,
-         rand = Random.Range(-1f, 1f)
-      };
-      var jobHandle = job.Schedule(vertices.Length, 1);
-      jobHandle.Complete();
-      mesh.SetVertices(job.vertices);
-      mesh.RecalculateBounds();
-      mesh.RecalculateNormals();
-      */
+        var job = new VertexJob {
+           vertices = vertices,
+           rand = Random.Range(-1f, 1f)
+        };
+        var jobHandle = job.Schedule(vertices.Length, 1);
+        jobHandle.Complete();
+        mesh.SetVertices(job.vertices);
+        mesh.RecalculateBounds();
+        mesh.RecalculateNormals();
    }
 
-   private void GenerateMesh() {
-      var levels = new NativeArray<float>(size * size * size, Allocator.TempJob);
-      float size1 = size - 1.0f;
+     private void GenerateMesh() {
+        var levels = new NativeArray<float>(size * size * size, Allocator.TempJob);
+        float size1 = size - 1.0f;
 
-      for (int x = 0; x < size; x++) {
-         for (int y = 0; y < size; y++) {
-            for (int z = 0; z < size; z++) {
-               float fx = x / size1;
-               float fy = y / size1;
-               float fz = z / size1;
+        for (int x = 0; x < size; x++) {
+           for (int y = 0; y < size; y++) {
+              for (int z = 0; z < size; z++) {
+                 float fx = x / size1;
+                 float fy = y / size1;
+                 float fz = z / size1;
 
-               int idx = x + y * size + z * size * size;
+                 int idx = x + y * size + z * size * size;
 
-               levels[idx] = PerlinNoise3D(fx, fy, fz);
-            }
-         }
-      }
+                 levels[idx] = PerlinNoise3D(fx, fy, fz);
+              }
+           }
+        }
 
-      vertexIndices = new NativeHashMap<int, int>(size, Allocator.TempJob);
+        vertexIndices = new NativeHashMap<int, int>(size, Allocator.TempJob);
 
-      vertices.Clear();
-      triangles.Clear();
-      var jobHandle = new VertexJob {
-         levels = levels,
-         vertices = vertices,
-         triangles = triangles,
-         size = size,
-         cube = cube,
-         edgeVertex = edgeVertex,
-         vertexIndices = vertexIndices,
-         VertexOffset = vertexOffset,
-         EdgeConnection = edgeConnection,
-         EdgeDirection = edgeDirection,
-         CubeEdgeFlags = cubeEdgeFlags,
-         TriangleConnectionTable = triangleConnectionTable,
-      }.Schedule();
+        vertices.Clear();
+        triangles.Clear();
+        var jobHandle = new VertexJob {
+           levels = levels,
+           vertices = vertices,
+           triangles = triangles,
+           size = size,
+           cube = cube,
+           edgeVertex = edgeVertex,
+           vertexIndices = vertexIndices,
+           VertexOffset = vertexOffset,
+           EdgeConnection = edgeConnection,
+           EdgeDirection = edgeDirection,
+           CubeEdgeFlags = cubeEdgeFlags,
+           TriangleConnectionTable = triangleConnectionTable
+        }.Schedule();
 
-      var time = Time.realtimeSinceStartup;
-      jobHandle.Complete();
-      Debug.Log((Time.realtimeSinceStartup - time) * 1000 + "ms total, vertices: " + vertices.Length);
+        var time = Time.realtimeSinceStartup;
+        jobHandle.Complete();
+        Debug.Log((Time.realtimeSinceStartup - time) * 1000 + "ms total, vertices: " + vertices.Length);
 
 
-      mesh.SetVertices(vertices.ToArray());
-      mesh.SetTriangles(triangles.ToArray(), 0);
-      mesh.RecalculateNormals();
-      mesh.RecalculateBounds();
-      levels.Dispose();
-      vertexIndices.Dispose();
+        mesh.SetVertices(vertices.ToArray());
+        mesh.SetTriangles(triangles.ToArray(), 0);
+        mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
+        levels.Dispose();
+        vertexIndices.Dispose();
 
-      /*
-      var marching = new MarchingCubes();
-      var time = Time.realtimeSinceStartup;
-      marching.Generate(voxels, size, vertices, triangles);
-      Debug.Log((Time.realtimeSinceStartup - time) * 1000 + "ms, vertices: " + vertices.Count);
-      mesh.SetVertices(vertices);
-      mesh.SetTriangles(triangles.ToArray(), 0);
-      mesh.RecalculateNormals();
-      mesh.RecalculateBounds();
-      */
-   }
+
+        var marching = new MarchingCubes();
+        var time = Time.realtimeSinceStartup;
+        marching.Generate(voxels, size, vertices, triangles);
+        Debug.Log((Time.realtimeSinceStartup - time) * 1000 + "ms, vertices: " + vertices.Count);
+        mesh.SetVertices(vertices);
+        mesh.SetTriangles(triangles.ToArray(), 0);
+        mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
+   }*/
 
    private void OnDestroy() {
       vertices.Dispose();
@@ -194,6 +225,8 @@ public class PlaneManager : MonoBehaviour {
       edgeDirection.Dispose();
       cubeEdgeFlags.Dispose();
       triangleConnectionTable.Dispose();
+
+      levels.Dispose();
    }
 
 
