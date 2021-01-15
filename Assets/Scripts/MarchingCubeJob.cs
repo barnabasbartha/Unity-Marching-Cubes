@@ -8,25 +8,24 @@ using UnityEngine;
 public struct MarchingCubeJob : IJob {
    private const float SURFACE = .5f;
 
+   [ReadOnly] public int size;
    [WriteOnly] public NativeList<Vector3> vertices;
    [WriteOnly] public NativeList<int> triangles;
-   [ReadOnly] public int size;
    [ReadOnly] public NativeArray<float> levels;
+   public NativeArray<float> cube;
+   public NativeArray<Vector3> edgeVertex;
+   public NativeHashMap<int, int> vertexIndices;
    [ReadOnly] public NativeArray<int> VertexOffset;
    [ReadOnly] public NativeArray<int> EdgeConnection;
    [ReadOnly] public NativeArray<float> EdgeDirection;
    [ReadOnly] public NativeArray<int> CubeEdgeFlags;
    [ReadOnly] public NativeArray<int> TriangleConnectionTable;
-   public NativeArray<float> cube;
-   public NativeArray<Vector3> edgeVertex;
-   public NativeHashMap<int, int> vertexIndices;
 
    public void Execute() {
       int size1 = size - 1;
       int size2 = size1 * size1;
       int size3 = size2 * size1;
       int nrOfVertices = 0;
-
       for (int index = 0; index < size3; index++) {
          int x = index % size1;
          int y = (int) Math.Floor(index / (float) size1) % size1;
