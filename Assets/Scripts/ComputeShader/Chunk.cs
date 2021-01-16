@@ -86,12 +86,15 @@ public class Chunk : MonoBehaviour {
       //var vertices = new NativeArray<Vector3>(nrOfVertices, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
       //var triangles = new NativeArray<int>(nrOfVertices, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
       var vertices = mesh.vertices;
-      var triangles = mesh.triangles;
-      if (nrOfTriangles * 3 > mesh.vertices.Length) {
+      if (nrOfTriangles * 3 > vertices.Length) {
          vertices = new Vector3[nrOfTriangles * 3 * 2];
-         triangles = new int[nrOfTriangles * 3 * 2];
       }
       // TODO: Decrease
+
+      var triangles = mesh.triangles;
+      if (nrOfTriangles * 3 != triangles.Length) {
+         triangles = new int[nrOfTriangles * 3];
+      }
 
       for (var i = 0; i < nrOfTriangles; i++) {
          var triangle = trisBufferTempArray[i];
@@ -116,8 +119,7 @@ public class Chunk : MonoBehaviour {
       }
 
       maxI = nrOfTriangles;
-
-      mesh.SetVertices(vertices);
+      mesh.SetVertices(vertices, 0, nrOfTriangles * 3);
       mesh.SetTriangles(triangles, 0);
       mesh.RecalculateNormals();
       mesh.RecalculateBounds();
