@@ -1,7 +1,9 @@
-﻿using Unity.Collections;
+﻿using Unity.Burst;
+using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
 
+[BurstCompile]
 public struct NoiseJob : IJobParallelFor {
    [WriteOnly] public NativeArray<float> levels;
    [ReadOnly] public int size;
@@ -10,7 +12,7 @@ public struct NoiseJob : IJobParallelFor {
 
    public void Execute(int index) {
       int z = index % size;
-      int y = (index / size) % size;
+      int y = index / size % size;
       int x = index / (size * size);
       float fx = x / noiseScale + noiseOffset;
       float fy = y / noiseScale;
