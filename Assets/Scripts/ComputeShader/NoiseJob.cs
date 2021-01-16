@@ -33,6 +33,21 @@ public struct NoiseJob : IJobParallelFor {
    }
 
    private static float _perlin3DFixed(float a, float b) {
-      return Mathf.Sin(Mathf.PI * Mathf.PerlinNoise(a, b));
+      return Sin(Mathf.PI * Mathf.PerlinNoise(a, b));
+   }
+
+
+   // Low precision Sin approximation
+   // http://www.mclimatiano.com/faster-sine-approximation-using-quadratic-curve/
+   private static float Sin(float x) {
+      if (x < -3.14159265f)
+         x += 6.28318531f;
+      else if (x > 3.14159265f)
+         x -= 6.28318531f;
+
+      if (x < 0)
+         return x * (1.27323954f + 0.405284735f * x);
+      else
+         return x * (1.27323954f - 0.405284735f * x);
    }
 }
