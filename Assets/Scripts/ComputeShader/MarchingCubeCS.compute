@@ -1,12 +1,75 @@
-#pragma kernel CSMain
+#pragma kernel cs_main
+#include "MarchingConstant.compute"
 
-// StructuredBuffer<GridPoint> m_GridPointBuffer;
-AppendStructuredBuffer<float3> m_TriBuffer;
-
-[numthreads(1, 1, 1)]
-void CSMain(uint3 id : SV_DispatchThreadID)
+struct Triangle
 {
-    m_TriBuffer.Append(float3(0, 0, 0));
-    m_TriBuffer.Append(float3(1, 0, 0));
-    m_TriBuffer.Append(float3(1, 0, 1));
+    float3 a;
+    float3 b;
+    float3 c;
+};
+
+StructuredBuffer<float> levels;
+AppendStructuredBuffer<Triangle> triangles;
+int size;
+float surface;
+
+int to_1dimension(const int x, const int y, const int z)
+{
+    return x + y * size + z * size * size;
+}
+
+float get_offset(const float a, const float b)
+{
+    const float delta = b - a;
+    return abs(delta) < 0.0001 ? surface : (surface - a) / delta;
+}
+
+float get_vertex_component(const int i, const int j, const int c, const float offset)
+{
+    return vertex_offset[edge_connection[i * 2] * 3 + j] + offset * edge_direction[i * 3 + j] + c;
+}
+
+float3 get_vertex(float cube[8], const int x, const int y, const int z, const int i)
+{
+    const float offset = get_offset(cube[edge_connection[i * 2]], cube[edge_connection[i * 2 + 1]]);
+    float3 vertex;
+    vertex.x = get_vertex_component(i, 0, x, offset);
+    vertex.y = get_vertex_component(i, 1, y, offset);
+    vertex.z = get_vertex_component(i, 2, z, offset);
+    return vertex;
+}
+
+[numthreads(4, 4, 4)]
+void cs_main(const uint3 id : SV_DispatchThreadID)
+{
+    const int x = id.x;
+    const int y = id.y;
+    const int z = id.z;
+    if (x >= size - 1 || y >= size - 1 || z >= size - 1) return;
+
+    int flag_index = 0;
+
+    float cube[8];
+    int i;
+    for (i = 0; i < 8; i++)
+    {
+        const int ix = x + vertex_offset[i * 3];
+        const int iy = y + vertex_offset[i * 3 + 1];
+        const int iz = z + vertex_offset[i * 3 + 2];
+        cube[i] = levels[to_1dimension(ix, iy, iz)];
+        if (cube[i] <= surface) flag_index |= 1 << i;
+    }
+
+    if (cube_edge_flags[flag_index] == 0) return;
+
+    for (i = 0; i < 16; i += 3)
+    {
+        const int tri_index = flag_index * 16 + i;
+        if (triangle_connection_table[tri_index] == -1) return;
+        Triangle t;
+        t.a = get_vertex(cube, x, y, z, triangle_connection_table[tri_index]);
+        t.b = get_vertex(cube, x, y, z, triangle_connection_table[tri_index + 1]);
+        t.c = get_vertex(cube, x, y, z, triangle_connection_table[tri_index + 2]);
+        triangles.Append(t);
+    }
 }

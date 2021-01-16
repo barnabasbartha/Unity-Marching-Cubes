@@ -1,28 +1,5 @@
 {
   "dependencies": {
-    "com.saitama.mathematics": {
-      "version": "https://github.com/5aitama/Saitama.Mathematics.git",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {
-        "com.unity.mathematics": "1.2.1",
-        "com.unity.test-framework": "1.1.19"
-      },
-      "hash": "c61ff4fef4b8ece3ad95341ad2803e999dd041b6"
-    },
-    "com.saitama.proceduralmesh": {
-      "version": "https://github.com/5aitama/Saitama.ProceduralMesh.git",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {
-        "com.unity.mathematics": "1.2.1",
-        "com.unity.collections": "0.9.0-preview.6",
-        "com.unity.entities": "0.14.0-preview.19",
-        "com.unity.jobs": "0.7.0-preview.17",
-        "com.unity.burst": "1.4.1"
-      },
-      "hash": "2b1fa2361abe91584884fe2f37b054b9c4cf9681"
-    },
     "com.unity.burst": {
       "version": "1.5.0-pre.3",
       "depth": 0,
