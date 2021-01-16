@@ -89,7 +89,7 @@ public class Chunk : MonoBehaviour {
       var triangles = mesh.triangles;
       if (nrOfTriangles * 3 > mesh.vertices.Length) {
          vertices = new Vector3[nrOfTriangles * 3 * 2];
-         triangles = new int[nrOfTriangles * 3];
+         triangles = new int[nrOfTriangles * 3 * 2];
       }
       // TODO: Decrease
 
