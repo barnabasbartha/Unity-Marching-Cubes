@@ -1,0 +1,12 @@
+#pragma kernel CSMain
+
+// StructuredBuffer<GridPoint> m_GridPointBuffer;
+AppendStructuredBuffer<float3> m_TriBuffer;
+
+[numthreads(1, 1, 1)]
+void CSMain(uint3 id : SV_DispatchThreadID)
+{
+    m_TriBuffer.Append(float3(0, 0, 0));
+    m_TriBuffer.Append(float3(1, 0, 0));
+    m_TriBuffer.Append(float3(1, 0, 1));
+}

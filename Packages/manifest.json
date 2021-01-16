@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "com.saitama.mathematics": "https://github.com/5aitama/Saitama.Mathematics.git",
+    "com.saitama.proceduralmesh": "https://github.com/5aitama/Saitama.ProceduralMesh.git",
     "com.unity.collections": "0.14.0-preview.16",
     "com.unity.jobs": "0.7.0-preview.17",
     "com.unity.burst": "1.5.0-pre.3",
