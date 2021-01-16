@@ -21,8 +21,6 @@ public struct NoiseJob : IJobParallelFor {
    }
 
    private static float PerlinNoise3D(float x, float y, float z) {
-      y += 1;
-      z += 2;
       float xy = _perlin3DFixed(x, y);
       float xz = _perlin3DFixed(x, z);
       float yz = _perlin3DFixed(y, z);
@@ -47,7 +45,6 @@ public struct NoiseJob : IJobParallelFor {
 
       if (x < 0)
          return x * (1.27323954f + 0.405284735f * x);
-      else
-         return x * (1.27323954f - 0.405284735f * x);
+      return x * (1.27323954f - 0.405284735f * x);
    }
 }
