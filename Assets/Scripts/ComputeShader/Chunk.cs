@@ -142,7 +142,7 @@ public class Chunk : MonoBehaviour {
          size = size,
          noiseScale = noiseScale,
          noiseOffset = noiseOffset
-      }.Schedule(N3, 64 * 8).Complete();
+      }.Schedule(N3, 64).Complete();
    }
 
    private void DisposeVariables() {
