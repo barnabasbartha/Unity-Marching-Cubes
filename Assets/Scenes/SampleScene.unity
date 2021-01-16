@@ -310,12 +310,12 @@ GameObject:
   - component: {fileID: 1105181375}
   - component: {fileID: 1105181374}
   m_Layer: 0
-  m_Name: PlaneManager
+  m_Name: DotsPlaneManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1105181374
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -329,7 +329,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: 0ce1e53c190365b49a5b78c141fd83de, type: 2}
-  size: 20
+  noiseOffset: 0
+  noiseScale: 0.01
 --- !u!4 &1105181375
 Transform:
   m_ObjectHideFlags: 0

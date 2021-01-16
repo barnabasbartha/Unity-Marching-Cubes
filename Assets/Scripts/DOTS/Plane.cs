@@ -2,7 +2,7 @@
 using UnityEngine;
 
 public class Plane : MonoBehaviour {
-   public static readonly int SIZE = 10;
+   public static readonly int SIZE = 20;
    public static readonly int SIZE1 = SIZE + 1;
    public static readonly int SIZE3 = SIZE1 * SIZE1 * SIZE1;
 

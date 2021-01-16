@@ -5,7 +5,7 @@ using Unity.Jobs;
 using UnityEngine;
 
 public class PlaneManager : MonoBehaviour {
-   private static readonly int N = 3;
+   private static readonly int N = 2;
    private static readonly float TOLERANCE = .01f;
    private static readonly float CELL_WORLD_SIZE = Plane.SIZE;
 
@@ -23,6 +23,8 @@ public class PlaneManager : MonoBehaviour {
    private NativeArray<float> edgeDirection;
    private NativeArray<int> cubeEdgeFlags;
    private NativeArray<int> triangleConnectionTable;
+
+   private NativeArray<JobHandle> jobs;
 
    private void Start() {
       planes = new List<GameObject>();
@@ -46,6 +48,8 @@ public class PlaneManager : MonoBehaviour {
       edgeDirection = new NativeArray<float>(EdgeDirection, Allocator.Persistent);
       cubeEdgeFlags = new NativeArray<int>(CubeEdgeFlags, Allocator.Persistent);
       triangleConnectionTable = new NativeArray<int>(TriangleConnectionTable, Allocator.Persistent);
+
+      jobs = new NativeArray<JobHandle>(planes.Count, Allocator.Persistent);
    }
 
    private void Update() {
@@ -54,7 +58,6 @@ public class PlaneManager : MonoBehaviour {
       oldNoiseOffset = noiseOffset;
       oldNoiseScale = noiseScale;
 
-      var jobs = new NativeArray<JobHandle>(planes.Count, Allocator.Temp);
       for (int i = 0; i < planes.Count; i++) {
          var plane = planes[i].GetComponent<Plane>();
          plane.UpdateLevels(noiseOffset, noiseScale);
@@ -74,13 +77,12 @@ public class PlaneManager : MonoBehaviour {
          }.Schedule();
       }
 
-      //JobHandle.ScheduleBatchedJobs();
+      // JobHandle.ScheduleBatchedJobs();
       JobHandle.CompleteAll(jobs);
+
       for (int i = 0; i < planes.Count; i++) {
          planes[i].GetComponent<Plane>().FinishUpdateMesh();
       }
-
-      jobs.Dispose();
    }
 
    private void OnDestroy() {
@@ -89,6 +91,8 @@ public class PlaneManager : MonoBehaviour {
       edgeDirection.Dispose();
       cubeEdgeFlags.Dispose();
       triangleConnectionTable.Dispose();
+
+      jobs.Dispose();
    }
 
 
