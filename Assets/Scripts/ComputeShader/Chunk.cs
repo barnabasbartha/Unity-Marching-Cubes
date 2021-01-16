@@ -1,4 +1,5 @@
 using Unity.Collections;
+using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -114,17 +115,12 @@ public class Chunk : MonoBehaviour {
 
       levels = new NativeArray<float>(N3, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
 
-      for (int x = 0; x < size; x++) {
-         for (int y = 0; y < size; y++) {
-            for (int z = 0; z < size; z++) {
-               float fx = (float) x / noiseScale + noiseOffset;
-               float fy = (float) y / noiseScale;
-               float fz = (float) z / noiseScale;
-               int idx = x + y * size + z * size * size;
-               levels[idx] = PerlinNoise3D(fx, fy, fz);
-            }
-         }
-      }
+      new NoiseJob {
+         levels = levels,
+         size = size,
+         noiseScale = noiseScale,
+         noiseOffset = noiseOffset
+      }.Schedule(N3, 64).Complete();
    }
 
    private void DisposeVariables() {
@@ -138,22 +134,6 @@ public class Chunk : MonoBehaviour {
 
    private void OnDestroy() {
       DisposeVariables();
-   }
-
-   private static float PerlinNoise3D(float x, float y, float z) {
-      y += 1;
-      z += 2;
-      float xy = _perlin3DFixed(x, y);
-      float xz = _perlin3DFixed(x, z);
-      float yz = _perlin3DFixed(y, z);
-      float yx = _perlin3DFixed(y, x);
-      float zx = _perlin3DFixed(z, x);
-      float zy = _perlin3DFixed(z, y);
-      return xy * xz * yz * yx * zx * zy;
-   }
-
-   private static float _perlin3DFixed(float a, float b) {
-      return Mathf.Sin(Mathf.PI * Mathf.PerlinNoise(a, b));
    }
 
    struct Triangle {
