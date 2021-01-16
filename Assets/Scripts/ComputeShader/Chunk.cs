@@ -119,7 +119,7 @@ public class Chunk : MonoBehaviour {
       }
 
       maxI = nrOfTriangles;
-      mesh.SetVertices(vertices, 0, nrOfTriangles * 3);
+      mesh.SetVertices(vertices);
       mesh.SetTriangles(triangles, 0);
       mesh.RecalculateNormals();
       mesh.RecalculateBounds();
