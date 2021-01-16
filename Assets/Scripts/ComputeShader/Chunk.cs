@@ -37,6 +37,8 @@ public class Chunk : MonoBehaviour {
    // Used to store grid data
    private NativeArray<float> levels;
 
+   private int maxI;
+
    void Start() {
       // meshCollider = GetComponent<MeshCollider>();
       meshFilter = GetComponent<MeshFilter>();
@@ -51,7 +53,6 @@ public class Chunk : MonoBehaviour {
 
    public void BuildMesh() {
       UpdateVariables();
-      mesh.Clear();
 
       var kernel = shader.FindKernel("cs_main");
 
@@ -84,17 +85,37 @@ public class Chunk : MonoBehaviour {
 
       //var vertices = new NativeArray<Vector3>(nrOfVertices, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
       //var triangles = new NativeArray<int>(nrOfVertices, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
-      var vertices = new Vector3[nrOfTriangles * 3];
-      var triangles = new int[nrOfTriangles * 3];
+      var vertices = mesh.vertices;
+      var triangles = mesh.triangles;
+      if (nrOfTriangles * 3 > mesh.vertices.Length) {
+         vertices = new Vector3[nrOfTriangles * 3 * 2];
+         triangles = new int[nrOfTriangles * 3];
+      }
+      // TODO: Decrease
+
       for (var i = 0; i < nrOfTriangles; i++) {
          var triangle = trisBufferTempArray[i];
-         vertices[i * 3] = new Vector3(triangle.a.x, triangle.a.y, triangle.a.z);
-         vertices[i * 3 + 1] = new Vector3(triangle.b.x, triangle.b.y, triangle.b.z);
-         vertices[i * 3 + 2] = new Vector3(triangle.c.x, triangle.c.y, triangle.c.z);
+         if (maxI < i) {
+            vertices[i] = new Vector3();
+            vertices[i + 1] = new Vector3();
+            vertices[i + 2] = new Vector3();
+         }
+
+         vertices[i * 3].x = triangle.a.x;
+         vertices[i * 3].y = triangle.a.y;
+         vertices[i * 3].z = triangle.a.z;
+         vertices[i * 3 + 1].x = triangle.b.x;
+         vertices[i * 3 + 1].y = triangle.b.y;
+         vertices[i * 3 + 1].z = triangle.b.z;
+         vertices[i * 3 + 2].x = triangle.c.x;
+         vertices[i * 3 + 2].y = triangle.c.y;
+         vertices[i * 3 + 2].z = triangle.c.z;
          triangles[i * 3] = i * 3;
          triangles[i * 3 + 1] = i * 3 + 1;
          triangles[i * 3 + 2] = i * 3 + 2;
       }
+
+      maxI = nrOfTriangles;
 
       mesh.SetVertices(vertices);
       mesh.SetTriangles(triangles, 0);
@@ -119,7 +140,7 @@ public class Chunk : MonoBehaviour {
          size = size,
          noiseScale = noiseScale,
          noiseOffset = noiseOffset
-      }.Schedule(N3, 64).Complete();
+      }.Schedule(N3, 64 * 8).Complete();
    }
 
    private void DisposeVariables() {

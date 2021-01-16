@@ -33,13 +33,13 @@ public class ChunkManager : MonoBehaviour {
    }
 
    private void Update() {
-      if (sizeMultiplier != prevSizeMultiplier || Math.Abs(noiseOffset - prevNoiseOffset) > TOLERANCE ||
-          Math.Abs(noiseScale - prevNoiseScale) > TOLERANCE) {
-         prevSizeMultiplier = sizeMultiplier;
-         prevNoiseOffset = noiseOffset;
-         prevNoiseScale = noiseScale;
-         UpdateChunk();
-      }
+      //if (sizeMultiplier != prevSizeMultiplier || Math.Abs(noiseOffset - prevNoiseOffset) > TOLERANCE ||
+      //    Math.Abs(noiseScale - prevNoiseScale) > TOLERANCE) {
+      //  prevSizeMultiplier = sizeMultiplier;
+      //  prevNoiseOffset = noiseOffset;
+      //  prevNoiseScale = noiseScale;
+      UpdateChunk();
+      // }
    }
 
    private void UpdateChunk() {
