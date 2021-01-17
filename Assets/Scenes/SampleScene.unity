@@ -157,7 +157,7 @@ MonoBehaviour:
   cellSizeMultiplier: 2
   noiseScale: 30
   noiseOffset: 0
-  gridSize: 6
+  gridSize: 8
   gridScale: 1
   cursor: {fileID: 1128017423}
 --- !u!4 &164169975
@@ -415,7 +415,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 80
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -548,7 +548,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _camera: {fileID: 580793130}
-  distance: 8
+  distance: 14
   size: 1
   value: 0.15
 --- !u!4 &1128017425

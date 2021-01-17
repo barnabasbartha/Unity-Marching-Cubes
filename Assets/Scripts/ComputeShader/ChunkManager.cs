@@ -15,7 +15,7 @@ public class ChunkManager : MonoBehaviour {
    [Range(-10f, 10f)] public float noiseOffset;
    private float prevNoiseOffset;
 
-   [Range(1, 6)] public int gridSize = 3;
+   [Range(1, 10)] public int gridSize = 3;
    [Range(.1f, 10f)] public float gridScale = 2f;
    private List<GameObject> chunks;
 
