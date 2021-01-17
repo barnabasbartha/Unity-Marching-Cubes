@@ -117,15 +117,9 @@ public class Chunk : MonoBehaviour {
 
       for (var i = 0; i < nrOfTriangles; i++) {
          var triangle = trisBufferTempArray[i];
-         if (maxI < i) {
-            vertices[i] = new Vector3();
-            vertices[i + 1] = new Vector3();
-            vertices[i + 2] = new Vector3();
-         }
-
-         AddTriangle(i * 3, triangle.a);
-         AddTriangle(i * 3 + 1, triangle.b);
-         AddTriangle(i * 3 + 2, triangle.c);
+         AddTriangle(i, 0, triangle.a);
+         AddTriangle(i, 1, triangle.b);
+         AddTriangle(i, 2, triangle.c);
       }
 
       maxI = nrOfTriangles;
@@ -137,7 +131,12 @@ public class Chunk : MonoBehaviour {
       mesh.RecalculateTangents();
    }
 
-   private void AddTriangle(int j, float3 vertex) {
+   private void AddTriangle(int i, int offset, float3 vertex) {
+      var j = i * 3 + offset;
+      if (maxI < i) {
+         vertices[j] = new Vector3();
+      }
+
       var hash = vertex.GetHashCode();
       if (!vertexCache.ContainsKey(hash)) {
          vertexCache.Add(hash, j);

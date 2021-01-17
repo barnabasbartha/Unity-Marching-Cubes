@@ -154,10 +154,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shader: {fileID: 7200000, guid: c0752cd712a660043a2f20868dfecdb2, type: 3}
   material: {fileID: 2100000, guid: 0ce1e53c190365b49a5b78c141fd83de, type: 2}
-  cellSizeMultiplier: 4
+  cellSizeMultiplier: 2
   noiseScale: 15
   noiseOffset: 0
-  gridSize: 1
+  gridSize: 3
   gridScale: 1
 --- !u!4 &164169975
 Transform:
