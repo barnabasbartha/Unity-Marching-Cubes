@@ -20,7 +20,6 @@ int to_1dimension(const int x, const int y, const int z)
 
 float get_offset(const float a, const float b)
 {
-    // TODO: Use pos in offset
     const float delta = b - a;
     return delta == 0 ? surface : (surface - a) / delta;
 }
