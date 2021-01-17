@@ -164,9 +164,10 @@ public class Chunk : MonoBehaviour {
       public float3 c;
    }
 
-   public void SetLevel(int x, int y, int z, float value) {
+   public bool SetLevel(int x, int y, int z, float value) {
       var i = x + y * size + z * size * size;
-      if (levels.Length <= i || i < 0) return;
+      if (levels.Length <= i || i < 0) return false;
       levels[i] = Mathf.Clamp(levels[i] + value, 0f, 1f);
+      return true;
    }
 }
