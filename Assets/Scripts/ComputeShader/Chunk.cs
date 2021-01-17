@@ -57,9 +57,9 @@ public class Chunk : MonoBehaviour {
       kernel = shader.FindKernel("cs_main");
       shader.SetFloats("surface", SURFACE);
       shader.GetKernelThreadGroupSizes(kernel, out uint kx, out uint ky, out uint kz);
-      thsizex = (int) math.ceil(size / (float) kx);
-      thsizey = (int) math.ceil(size / (float) ky);
-      thsizez = (int) math.ceil(size / (float) kz);
+      thsizex = (int) math.ceil(size1 / (float) kx);
+      thsizey = (int) math.ceil(size1 / (float) ky);
+      thsizez = (int) math.ceil(size1 / (float) kz);
 
       levels = new NativeArray<float>(N3, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
       levelsBuffer = new ComputeBuffer(N3, sizeof(float), ComputeBufferType.Default);
