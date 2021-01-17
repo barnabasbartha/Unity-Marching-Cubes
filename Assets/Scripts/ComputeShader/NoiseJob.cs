@@ -9,14 +9,15 @@ public struct NoiseJob : IJobParallelFor {
    [ReadOnly] public int size;
    [ReadOnly] public float noiseScale;
    [ReadOnly] public float noiseOffset;
+   [ReadOnly] public Vector3 offset;
 
    public void Execute(int index) {
       int z = index % size;
       int y = index / size % size;
       int x = index / (size * size);
-      float fx = x / noiseScale + noiseOffset;
-      float fy = y / noiseScale;
-      float fz = z / noiseScale;
+      float fx = (x + offset.x + noiseOffset) / noiseScale;
+      float fy = (y + offset.y) / noiseScale;
+      float fz = (z + offset.z) / noiseScale;
       levels[index] = PerlinNoise3D(fx, fy, fz);
    }
 
