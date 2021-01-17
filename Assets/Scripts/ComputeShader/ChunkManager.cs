@@ -91,16 +91,14 @@ public class ChunkManager : MonoBehaviour {
       var centerY = (int) Mathf.Round(position.y);
       var centerZ = (int) Mathf.Round(position.z);
 
-      for (int x = centerX - size; x < centerX + size; x++) {
-         for (int y = centerY - size; y < centerY + size; y++) {
-            for (int z = centerZ - size; z < centerZ + size; z++) {
+      for (int x = centerX - size; x <= centerX + size; x++) {
+         for (int y = centerY - size; y <= centerY + size; y++) {
+            for (int z = centerZ - size; z <= centerZ + size; z++) {
                AddLevelToPoint(x, y, z, value);
             }
          }
       }
 
-
-      Debug.Log("Update " + targetChunks.Count);
       foreach (var chunk in targetChunks) {
          chunk.BuildMesh();
       }

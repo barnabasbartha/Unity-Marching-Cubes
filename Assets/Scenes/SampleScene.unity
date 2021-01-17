@@ -154,7 +154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shader: {fileID: 7200000, guid: c0752cd712a660043a2f20868dfecdb2, type: 3}
   material: {fileID: 2100000, guid: 0ce1e53c190365b49a5b78c141fd83de, type: 2}
-  cellSizeMultiplier: 3
+  cellSizeMultiplier: 2
   noiseScale: 30
   noiseOffset: 0
   gridSize: 6
@@ -459,12 +459,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd1fddf07f6a32740b19d5c91b45e975, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AccelerationMod: 0.9
+  AccelerationMod: 10
   XAxisSensitivity: 3
   YAxisSensitivity: 3
-  DecelerationMod: 0.9
+  DecelerationMod: 10
   MaxXAngle: 89
-  MaximumMovementSpeed: 0.2
+  MaximumMovementSpeed: 25
   Forwards: 119
   Backwards: 115
   Left: 97

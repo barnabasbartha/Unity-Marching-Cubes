@@ -45,7 +45,7 @@ public class FlyCamera : MonoBehaviour {
          _moveSpeed = _moveSpeed.normalized * MaximumMovementSpeed;
       }
 
-      transform.Translate(_moveSpeed);
+      transform.Translate(_moveSpeed * Time.deltaTime);
    }
 
    private Vector3 HandleKeyInput() {
