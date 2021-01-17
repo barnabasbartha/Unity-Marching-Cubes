@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
@@ -37,6 +38,7 @@ public class Chunk : MonoBehaviour {
 
    private Vector3[] vertices;
    private int[] triangles;
+   private Dictionary<int, int> vertexCache;
 
    private void Start() {
       // meshCollider = GetComponent<MeshCollider>();
@@ -66,6 +68,7 @@ public class Chunk : MonoBehaviour {
       trianglesBuffer = new ComputeBuffer(N13 * 5, sizeof(float) * 3 * 3, ComputeBufferType.Append);
       trianglesCountBuffer = new ComputeBuffer(1, sizeof(int), ComputeBufferType.Raw);
       trisBufferTempArray = new Triangle[N13 * 5];
+      vertexCache = new Dictionary<int, int>();
    }
 
    public void ResetLevels() {
@@ -102,7 +105,7 @@ public class Chunk : MonoBehaviour {
       //var vertices = new NativeArray<Vector3>(nrOfVertices, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
       //var triangles = new NativeArray<int>(nrOfVertices, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
       if (vertices == null || nrOfTriangles * 3 > vertices.Length) {
-         vertices = new Vector3[nrOfTriangles * 3 * 2];
+         vertices = new Vector3[nrOfTriangles * 3];
       }
       // TODO: Decrease
 
@@ -110,7 +113,8 @@ public class Chunk : MonoBehaviour {
          triangles = new int[nrOfTriangles * 3];
       }
 
-      // TODO: Cache vertices
+      vertexCache.Clear();
+
       for (var i = 0; i < nrOfTriangles; i++) {
          var triangle = trisBufferTempArray[i];
          if (maxI < i) {
@@ -119,18 +123,9 @@ public class Chunk : MonoBehaviour {
             vertices[i + 2] = new Vector3();
          }
 
-         vertices[i * 3].x = triangle.a.x;
-         vertices[i * 3].y = triangle.a.y;
-         vertices[i * 3].z = triangle.a.z;
-         vertices[i * 3 + 1].x = triangle.b.x;
-         vertices[i * 3 + 1].y = triangle.b.y;
-         vertices[i * 3 + 1].z = triangle.b.z;
-         vertices[i * 3 + 2].x = triangle.c.x;
-         vertices[i * 3 + 2].y = triangle.c.y;
-         vertices[i * 3 + 2].z = triangle.c.z;
-         triangles[i * 3] = i * 3;
-         triangles[i * 3 + 1] = i * 3 + 1;
-         triangles[i * 3 + 2] = i * 3 + 2;
+         AddTriangle(i * 3, triangle.a);
+         AddTriangle(i * 3 + 1, triangle.b);
+         AddTriangle(i * 3 + 2, triangle.c);
       }
 
       maxI = nrOfTriangles;
@@ -140,6 +135,18 @@ public class Chunk : MonoBehaviour {
       mesh.RecalculateBounds();
       mesh.RecalculateNormals();
       mesh.RecalculateTangents();
+   }
+
+   private void AddTriangle(int j, float3 vertex) {
+      var hash = vertex.GetHashCode();
+      if (!vertexCache.ContainsKey(hash)) {
+         vertexCache.Add(hash, j);
+         vertices[j].x = vertex.x;
+         vertices[j].y = vertex.y;
+         vertices[j].z = vertex.z;
+      }
+
+      triangles[j] = vertexCache[hash];
    }
 
    private void DisposeVariables() {
