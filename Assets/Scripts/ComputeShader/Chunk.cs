@@ -94,23 +94,20 @@ public class Chunk : MonoBehaviour {
       trianglesCountBuffer.GetData(countBufferArray, 0, 0, 1);
 
       var nrOfTriangles = countBufferArray[0];
-      // Debug.Log(size);
-      // Debug.Log(nrOfTriangles);
-
       if (nrOfTriangles == 0)
          return;
+      var nrOfTriangles3 = nrOfTriangles * 3;
 
       trianglesBuffer.GetData(trisBufferTempArray, 0, 0, nrOfTriangles);
 
-      //var vertices = new NativeArray<Vector3>(nrOfVertices, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
-      //var triangles = new NativeArray<int>(nrOfVertices, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
-      if (vertices == null || nrOfTriangles * 3 > vertices.Length) {
-         vertices = new Vector3[nrOfTriangles * 3];
+      if (vertices == null || nrOfTriangles3 > vertices.Length) {
+         vertices = new Vector3[nrOfTriangles3];
       }
+
       // TODO: Decrease
 
-      if (triangles == null || nrOfTriangles * 3 != triangles.Length) {
-         triangles = new int[nrOfTriangles * 3];
+      if (triangles == null || nrOfTriangles3 != triangles.Length) {
+         triangles = new int[nrOfTriangles3];
       }
 
       vertexCache.Clear();
@@ -131,8 +128,8 @@ public class Chunk : MonoBehaviour {
       mesh.RecalculateTangents();
    }
 
-   private void AddTriangle(int i, int offset, float3 vertex) {
-      var j = i * 3 + offset;
+   private void AddTriangle(int i, int o, float3 vertex) {
+      var j = i * 3 + o;
       if (maxI < i) {
          vertices[j] = new Vector3();
       }

@@ -52,28 +52,21 @@ Triangle get_triangle(const float cube[8], const int x, const int y, const int z
 [numthreads(4, 4, 4)]
 void cs_main(const uint3 id : SV_DispatchThreadID)
 {
-    const int x = id.x;
-    const int y = id.y;
-    const int z = id.z;
-
     int flag_index = 0;
-
     float cube[8];
     for (int i = 0; i < 8; i++)
     {
-        const int ix = x + vertex_offset[i * 3];
-        const int iy = y + vertex_offset[i * 3 + 1];
-        const int iz = z + vertex_offset[i * 3 + 2];
+        const int ix = id.x + vertex_offset[i * 3];
+        const int iy = id.y + vertex_offset[i * 3 + 1];
+        const int iz = id.z + vertex_offset[i * 3 + 2];
         cube[i] = levels[to_1dimension(ix, iy, iz)];
         if (cube[i] <= surface) flag_index |= 1 << i;
     }
 
     if (cube_edge_flags[flag_index] == 0) return;
 
-    for (int i = 0; i < 16; i += 3)
+    for (int tri_index = flag_index * 16; triangle_connection_table[tri_index] != -1; tri_index += 3)
     {
-        const int tri_index = flag_index * 16 + i;
-        if (triangle_connection_table[tri_index] == -1) return;
-        triangles.Append(get_triangle(cube, x, y, z, tri_index));
+        triangles.Append(get_triangle(cube, id.x, id.y, id.z, tri_index));
     }
 }
