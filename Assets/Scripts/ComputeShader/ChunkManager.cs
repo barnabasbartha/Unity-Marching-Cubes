@@ -27,7 +27,7 @@ public class ChunkManager : MonoBehaviour {
       targetChunks = new HashSet<Chunk>();
       cellSize = cellSizeMultiplier * 8;
       CreateGrid();
-      cursor.GetComponent<CursorPainter>().OnPaintEvent += AddLevel;
+      cursor.GetComponent<CursorPainter>().OnPaintEvent += AddLevelInCube;
    }
 
    private void CreateGrid() {
@@ -85,26 +85,21 @@ public class ChunkManager : MonoBehaviour {
     * Paint related methods
     */
 
-   private void AddLevel(Vector3 position, int size, float value) {
+   private void AddLevelInCube(Vector3 position, int size, float value) {
       // TODO: Take scale into account
-      var x = (int) Mathf.Round(position.x);
-      var y = (int) Mathf.Round(position.y);
-      var z = (int) Mathf.Round(position.z);
-      var cellX = (int) Math.Floor(x / (float) cellSize);
-      var cellY = (int) Math.Floor(y / (float) cellSize);
-      var cellZ = (int) Math.Floor(z / (float) cellSize);
-      var xInChunk = x % cellSize;
-      var yInChunk = y % cellSize;
-      var zInChunk = z % cellSize;
-      AddLevelTo(cellX, cellY, cellZ, xInChunk, yInChunk, zInChunk, value);
-      if (xInChunk == 0) AddLevelTo(cellX - 1, cellY, cellZ, cellSize, yInChunk, zInChunk, value);
-      if (yInChunk == 0) AddLevelTo(cellX, cellY - 1, cellZ, xInChunk, cellSize, zInChunk, value);
-      if (zInChunk == 0) AddLevelTo(cellX, cellY, cellZ - 1, xInChunk, yInChunk, cellSize, value);
-      if (xInChunk == 0 && yInChunk == 0) AddLevelTo(cellX - 1, cellY - 1, cellZ, cellSize, cellSize, zInChunk, value);
-      if (xInChunk == 0 && zInChunk == 0) AddLevelTo(cellX - 1, cellY, cellZ - 1, cellSize, yInChunk, cellSize, value);
-      if (yInChunk == 0 && zInChunk == 0) AddLevelTo(cellX, cellY - 1, cellZ - 1, xInChunk, cellSize, cellSize, value);
-      if (xInChunk == 0 && yInChunk == 0 && zInChunk == 0)
-         AddLevelTo(cellX - 1, cellY - 1, cellZ - 1, cellSize, cellSize, cellSize, value);
+      var centerX = (int) Mathf.Round(position.x);
+      var centerY = (int) Mathf.Round(position.y);
+      var centerZ = (int) Mathf.Round(position.z);
+
+      for (int x = centerX - size; x < centerX + size; x++) {
+         for (int y = centerY - size; y < centerY + size; y++) {
+            for (int z = centerZ - size; z < centerZ + size; z++) {
+               AddLevelToPoint(x, y, z, value);
+            }
+         }
+      }
+
+
       Debug.Log("Update " + targetChunks.Count);
       foreach (var chunk in targetChunks) {
          chunk.BuildMesh();
@@ -113,7 +108,29 @@ public class ChunkManager : MonoBehaviour {
       targetChunks.Clear();
    }
 
-   private void AddLevelTo(int cellX, int cellY, int cellZ, int xInChunk, int yInChunk, int zInChunk, float value) {
+   private void AddLevelToPoint(int x, int y, int z, float value) {
+      var cellX = (int) Math.Floor(x / (float) cellSize);
+      var cellY = (int) Math.Floor(y / (float) cellSize);
+      var cellZ = (int) Math.Floor(z / (float) cellSize);
+      var xInChunk = x % cellSize;
+      var yInChunk = y % cellSize;
+      var zInChunk = z % cellSize;
+      AddLevelToChunk(cellX, cellY, cellZ, xInChunk, yInChunk, zInChunk, value);
+      if (xInChunk == 0) AddLevelToChunk(cellX - 1, cellY, cellZ, cellSize, yInChunk, zInChunk, value);
+      if (yInChunk == 0) AddLevelToChunk(cellX, cellY - 1, cellZ, xInChunk, cellSize, zInChunk, value);
+      if (zInChunk == 0) AddLevelToChunk(cellX, cellY, cellZ - 1, xInChunk, yInChunk, cellSize, value);
+      if (xInChunk == 0 && yInChunk == 0)
+         AddLevelToChunk(cellX - 1, cellY - 1, cellZ, cellSize, cellSize, zInChunk, value);
+      if (xInChunk == 0 && zInChunk == 0)
+         AddLevelToChunk(cellX - 1, cellY, cellZ - 1, cellSize, yInChunk, cellSize, value);
+      if (yInChunk == 0 && zInChunk == 0)
+         AddLevelToChunk(cellX, cellY - 1, cellZ - 1, xInChunk, cellSize, cellSize, value);
+      if (xInChunk == 0 && yInChunk == 0 && zInChunk == 0)
+         AddLevelToChunk(cellX - 1, cellY - 1, cellZ - 1, cellSize, cellSize, cellSize, value);
+   }
+
+   private void AddLevelToChunk(int cellX, int cellY, int cellZ, int xInChunk, int yInChunk, int zInChunk,
+      float value) {
       var chunkIndex = cellZ + cellY * gridSize + cellX * gridSize * gridSize;
       if (chunks.Count <= chunkIndex || chunkIndex < 0) return;
       var chunk = chunks[chunkIndex].GetComponent<Chunk>();
