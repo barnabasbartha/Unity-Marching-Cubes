@@ -7,7 +7,7 @@ public class ChunkManager : MonoBehaviour {
 
    public ComputeShader shader;
    public Material material;
-   [Range(1, 8)] public int cellSizeX8 = 1;
+   [Range(1, 8)] public int cellSizeMultiplier = 1;
    private int prevSizeMultiplier;
    [Range(.1f, 30f)] public float noiseScale = 1f;
    private float prevNoiseScale;
@@ -35,16 +35,16 @@ public class ChunkManager : MonoBehaviour {
                   typeof(Chunk)
                );
                var position = new Vector3(
-                  x * (cellSizeX8 * 8 - 1),
-                  y * (cellSizeX8 * 8 - 1),
-                  z * (cellSizeX8 * 8 - 1)
+                  x * cellSizeMultiplier * 8,
+                  y * cellSizeMultiplier * 8,
+                  z * cellSizeMultiplier * 8
                );
                var scaledPosition = position * gridScale;
                var chunkComponent = chunkObject.GetComponent<Chunk>();
                chunkComponent.offset = position;
                chunkComponent.shader = shader;
                chunkComponent.material = material;
-               chunkComponent.sizeMultiplier = cellSizeX8;
+               chunkComponent.sizeMultiplier = cellSizeMultiplier;
                var transformComponent = chunkObject.GetComponent<Transform>();
                transformComponent.position = scaledPosition;
                transformComponent.localScale = new Vector3(gridScale, gridScale, gridScale);
@@ -55,10 +55,10 @@ public class ChunkManager : MonoBehaviour {
    }
 
    private void Update() {
-      if (cellSizeX8 != prevSizeMultiplier ||
+      if (cellSizeMultiplier != prevSizeMultiplier ||
           Math.Abs(noiseOffset - prevNoiseOffset) > TOLERANCE ||
           Math.Abs(noiseScale - prevNoiseScale) > TOLERANCE) {
-         prevSizeMultiplier = cellSizeX8;
+         prevSizeMultiplier = cellSizeMultiplier;
          prevNoiseOffset = noiseOffset;
          prevNoiseScale = noiseScale;
          foreach (var o in chunks) {
@@ -68,7 +68,7 @@ public class ChunkManager : MonoBehaviour {
    }
 
    private void UpdateChunk(Chunk chunk) {
-      chunk.sizeMultiplier = cellSizeX8;
+      chunk.sizeMultiplier = cellSizeMultiplier;
       chunk.noiseScale = noiseScale;
       chunk.noiseOffset = noiseOffset;
       chunk.ResetLevels();

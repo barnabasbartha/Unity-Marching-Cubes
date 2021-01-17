@@ -12,9 +12,9 @@ public struct NoiseJob : IJobParallelFor {
    [ReadOnly] public Vector3 offset;
 
    public void Execute(int index) {
-      int z = index % size;
+      int x = index % size;
       int y = index / size % size;
-      int x = index / (size * size);
+      int z = index / (size * size);
       float fx = (x + offset.x + noiseOffset) / noiseScale;
       float fy = (y + offset.y) / noiseScale;
       float fz = (z + offset.z) / noiseScale;

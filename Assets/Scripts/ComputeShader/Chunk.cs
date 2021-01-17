@@ -45,7 +45,7 @@ public class Chunk : MonoBehaviour {
       // meshCollider.sharedMesh = mesh;
       meshRenderer.material = material;
 
-      size = sizeMultiplier * 8;
+      size = sizeMultiplier * 8 + 1;
       N3 = size * size * size;
 
       kernel = shader.FindKernel("cs_main");
@@ -102,6 +102,7 @@ public class Chunk : MonoBehaviour {
          triangles = new int[nrOfTriangles * 3];
       }
 
+      // TODO: Cache vertices
       for (var i = 0; i < nrOfTriangles; i++) {
          var triangle = trisBufferTempArray[i];
          if (maxI < i) {
@@ -129,7 +130,6 @@ public class Chunk : MonoBehaviour {
       mesh.SetTriangles(triangles, 0);
       mesh.RecalculateNormals();
       mesh.RecalculateBounds();
-      mesh.Optimize();
    }
 
    private void DisposeVariables() {
