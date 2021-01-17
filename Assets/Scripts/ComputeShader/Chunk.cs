@@ -13,7 +13,9 @@ public class Chunk : MonoBehaviour {
    public float noiseScale;
    public int sizeMultiplier;
    private int size;
+   private int size1;
    private int N3;
+   private int N13;
 
    // private MeshCollider meshCollider;
    private MeshRenderer meshRenderer;
@@ -29,7 +31,9 @@ public class Chunk : MonoBehaviour {
 
    private int maxI;
    private int kernel;
-   private int thsize;
+   private int thsizex;
+   private int thsizey;
+   private int thsizez;
 
    private Vector3[] vertices;
    private int[] triangles;
@@ -46,18 +50,22 @@ public class Chunk : MonoBehaviour {
       meshRenderer.material = material;
 
       size = sizeMultiplier * 8 + 1;
+      size1 = sizeMultiplier * 8;
       N3 = size * size * size;
+      N13 = size1 * size1 * size1;
 
       kernel = shader.FindKernel("cs_main");
       shader.SetFloats("surface", SURFACE);
       shader.GetKernelThreadGroupSizes(kernel, out uint kx, out uint ky, out uint kz);
-      thsize = (int) math.ceil(size / (float) kx);
+      thsizex = (int) math.ceil(size / (float) kx);
+      thsizey = (int) math.ceil(size / (float) ky);
+      thsizez = (int) math.ceil(size / (float) kz);
 
       levels = new NativeArray<float>(N3, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
       levelsBuffer = new ComputeBuffer(N3, sizeof(float), ComputeBufferType.Default);
-      trianglesBuffer = new ComputeBuffer(N3 * 5, sizeof(float) * 3 * 3, ComputeBufferType.Append);
+      trianglesBuffer = new ComputeBuffer(N13 * 5, sizeof(float) * 3 * 3, ComputeBufferType.Append);
       trianglesCountBuffer = new ComputeBuffer(1, sizeof(int), ComputeBufferType.Raw);
-      trisBufferTempArray = new Triangle[N3 * 5];
+      trisBufferTempArray = new Triangle[N13 * 5];
    }
 
    public void ResetLevels() {
@@ -77,7 +85,7 @@ public class Chunk : MonoBehaviour {
       shader.SetBuffer(kernel, "levels", levelsBuffer);
       shader.SetBuffer(kernel, "triangles", trianglesBuffer);
 
-      shader.Dispatch(kernel, thsize, thsize, thsize);
+      shader.Dispatch(kernel, thsizex, thsizey, thsizez);
 
       ComputeBuffer.CopyCount(trianglesBuffer, trianglesCountBuffer, 0);
       trianglesCountBuffer.GetData(countBufferArray, 0, 0, 1);
@@ -126,10 +134,12 @@ public class Chunk : MonoBehaviour {
       }
 
       maxI = nrOfTriangles;
+      mesh.Clear();
       mesh.SetVertices(vertices);
       mesh.SetTriangles(triangles, 0);
-      mesh.RecalculateNormals();
       mesh.RecalculateBounds();
+      mesh.RecalculateNormals();
+      mesh.RecalculateTangents();
    }
 
    private void DisposeVariables() {
