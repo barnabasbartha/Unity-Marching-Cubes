@@ -60,4 +60,4 @@ sysinfo.txt
 crashlytics-build.properties
 
 # IntelliJ
-.idea/**
+**/.idea/**
