@@ -1,4 +1,5 @@
-﻿using Unity.Burst;
+﻿using System;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
@@ -12,13 +13,24 @@ public struct NoiseJob : IJobParallelFor {
    [ReadOnly] public Vector3 offset;
 
    public void Execute(int index) {
+      // var y = index / size % size;
+      // levels[index] = Mathf.Abs(y - 10f) < 0f ? 1f : 0f;
+
       int x = index % size;
       int y = index / size % size;
       int z = index / (size * size);
-      float fx = (x + offset.x + noiseOffset) / noiseScale;
-      float fy = (y + offset.y) / noiseScale;
-      float fz = (z + offset.z) / noiseScale;
-      levels[index] = PerlinNoise3D(fx, fy, fz);
+      var position = new Vector3(x + offset.x, y + offset.y, z + offset.z);
+      var center = new Vector3(30, 30, 30);
+      levels[index] = Vector3.Distance(position, center) < 10 ? 1 : 0;
+
+      // int x = index % size;
+      // int y = index / size % size;
+      // int z = index / (size * size);
+      // float fx = (x + offset.x + noiseOffset) / noiseScale;
+      // float fy = (y + offset.y) / noiseScale;
+      // float fz = (z + offset.z) / noiseScale;
+      // // levels[index] = PerlinNoise3D(fx, fy, fz);
+      // levels[index] = Mathf.Clamp(PerlinNoise3D(fx, fy, fz), 0f, 1f);
    }
 
    private static float PerlinNoise3D(float x, float y, float z) {
